@@ -101,6 +101,7 @@ export interface AfterToolCallContext {
 }
 
 export interface AgentLoopConfig extends SimpleStreamOptions {
+	codexWebsocketsEnabled?: boolean;
 	model: Model<any>;
 
 	/**

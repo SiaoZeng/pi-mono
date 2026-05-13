@@ -38,6 +38,7 @@ export interface SettingsConfig {
 	steeringMode: "all" | "one-at-a-time";
 	followUpMode: "all" | "one-at-a-time";
 	transport: Transport;
+	codexWebsocketsEnabled: boolean;
 	thinkingLevel: ThinkingLevel;
 	availableThinkingLevels: ThinkingLevel[];
 	currentTheme: string;
@@ -64,6 +65,7 @@ export interface SettingsCallbacks {
 	onSteeringModeChange: (mode: "all" | "one-at-a-time") => void;
 	onFollowUpModeChange: (mode: "all" | "one-at-a-time") => void;
 	onTransportChange: (transport: Transport) => void;
+	onCodexWebsocketsEnabledChange: (enabled: boolean) => void;
 	onThinkingLevelChange: (level: ThinkingLevel) => void;
 	onThemeChange: (theme: string) => void;
 	onThemePreview?: (theme: string) => void;
@@ -188,6 +190,13 @@ export class SettingsSelectorComponent extends Container {
 				description: "Preferred transport for providers that support multiple transports",
 				currentValue: config.transport,
 				values: ["sse", "websocket", "auto"],
+			},
+			{
+				id: "codex-websockets-enabled",
+				label: "Codex WebSockets",
+				description: "Enable or disable WebSocket transport capability for openai-codex",
+				currentValue: config.codexWebsocketsEnabled ? "true" : "false",
+				values: ["true", "false"],
 			},
 			{
 				id: "hide-thinking",
@@ -407,6 +416,9 @@ export class SettingsSelectorComponent extends Container {
 						break;
 					case "transport":
 						callbacks.onTransportChange(newValue as Transport);
+						break;
+					case "codex-websockets-enabled":
+						callbacks.onCodexWebsocketsEnabledChange(newValue === "true");
 						break;
 					case "hide-thinking":
 						callbacks.onHideThinkingBlockChange(newValue === "true");

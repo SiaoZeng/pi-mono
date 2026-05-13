@@ -106,6 +106,7 @@ export interface AgentOptions {
 	sessionId?: string;
 	thinkingBudgets?: ThinkingBudgets;
 	transport?: Transport;
+	codexWebsocketsEnabled?: boolean;
 	maxRetryDelayMs?: number;
 	toolExecution?: ToolExecutionMode;
 }
@@ -182,6 +183,8 @@ export class Agent {
 	public thinkingBudgets?: ThinkingBudgets;
 	/** Preferred transport forwarded to the stream function. */
 	public transport: Transport;
+	/** Built-in Codex websocket capability override forwarded to the stream function. */
+	public codexWebsocketsEnabled: boolean;
 	/** Optional cap for provider-requested retry delays. */
 	public maxRetryDelayMs?: number;
 	/** Tool execution strategy for assistant messages that contain multiple tool calls. */
@@ -201,7 +204,8 @@ export class Agent {
 		this.followUpQueue = new PendingMessageQueue(options.followUpMode ?? "one-at-a-time");
 		this.sessionId = options.sessionId;
 		this.thinkingBudgets = options.thinkingBudgets;
-		this.transport = options.transport ?? "sse";
+		this.transport = options.transport ?? "auto";
+		this.codexWebsocketsEnabled = options.codexWebsocketsEnabled ?? true;
 		this.maxRetryDelayMs = options.maxRetryDelayMs;
 		this.toolExecution = options.toolExecution ?? "parallel";
 	}
@@ -416,6 +420,7 @@ export class Agent {
 			onPayload: this.onPayload,
 			onResponse: this.onResponse,
 			transport: this.transport,
+			codexWebsocketsEnabled: this.codexWebsocketsEnabled,
 			thinkingBudgets: this.thinkingBudgets,
 			maxRetryDelayMs: this.maxRetryDelayMs,
 			toolExecution: this.toolExecution,

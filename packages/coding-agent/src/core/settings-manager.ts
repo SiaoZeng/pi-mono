@@ -67,7 +67,8 @@ export interface Settings {
 	defaultProvider?: string;
 	defaultModel?: string;
 	defaultThinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh";
-	transport?: TransportSetting; // default: "sse"
+	transport?: TransportSetting; // default: "auto"
+	codexWebsocketsEnabled?: boolean; // default: true - built-in websocket capability switch for openai-codex
 	steeringMode?: "all" | "one-at-a-time";
 	followUpMode?: "all" | "one-at-a-time";
 	theme?: string;
@@ -618,12 +619,22 @@ export class SettingsManager {
 	}
 
 	getTransport(): TransportSetting {
-		return this.settings.transport ?? "sse";
+		return this.settings.transport ?? "auto";
 	}
 
 	setTransport(transport: TransportSetting): void {
 		this.globalSettings.transport = transport;
 		this.markModified("transport");
+		this.save();
+	}
+
+	getCodexWebsocketsEnabled(): boolean {
+		return this.settings.codexWebsocketsEnabled ?? true;
+	}
+
+	setCodexWebsocketsEnabled(enabled: boolean): void {
+		this.globalSettings.codexWebsocketsEnabled = enabled;
+		this.markModified("codexWebsocketsEnabled");
 		this.save();
 	}
 

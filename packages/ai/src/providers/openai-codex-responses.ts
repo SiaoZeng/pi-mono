@@ -61,6 +61,7 @@ const CODEX_RESPONSE_STATUSES = new Set<CodexResponseStatus>([
 // ============================================================================
 
 export interface OpenAICodexResponsesOptions extends StreamOptions {
+	codexWebsocketsEnabled?: boolean;
 	reasoningEffort?: "none" | "minimal" | "low" | "medium" | "high" | "xhigh";
 	reasoningSummary?: "auto" | "concise" | "detailed" | "off" | "on" | null;
 	serviceTier?: ResponseCreateParamsStreaming["service_tier"];
@@ -164,9 +165,16 @@ export const streamOpenAICodexResponses: StreamFunction<"openai-codex-responses"
 				websocketRequestId,
 			);
 			const bodyJson = JSON.stringify(body);
-			const transport = options?.transport || "sse";
+			const transport = options?.transport || "auto";
+			const codexWebsocketsEnabled = options?.codexWebsocketsEnabled ?? true;
+			const websocketAllowedByConfig = codexWebsocketsEnabled && transport !== "sse";
+			const websocketDisabledForSession =
+				websocketAllowedByConfig && isWebSocketSseFallbackActive(options?.sessionId);
+			if (websocketDisabledForSession) {
+				recordWebSocketSseFallback(options?.sessionId);
+			}
 
-			if (transport !== "sse") {
+			if (websocketAllowedByConfig && !websocketDisabledForSession) {
 				let websocketStarted = false;
 				try {
 					await processWebSocketStream(
@@ -193,9 +201,11 @@ export const streamOpenAICodexResponses: StreamFunction<"openai-codex-responses"
 					stream.end();
 					return;
 				} catch (error) {
+					recordWebSocketFailure(options?.sessionId);
 					if (transport === "websocket" || websocketStarted) {
 						throw error;
 					}
+					recordWebSocketSseFallback(options?.sessionId);
 				}
 			}
 
@@ -533,6 +543,20 @@ interface CachedWebSocketConnection {
 }
 
 const websocketSessionCache = new Map<string, CachedWebSocketConnection>();
+const websocketSseFallbackSessions = new Set<string>();
+
+function isWebSocketSseFallbackActive(sessionId: string | undefined): boolean {
+	return sessionId ? websocketSseFallbackSessions.has(sessionId) : false;
+}
+
+function recordWebSocketSseFallback(sessionId: string | undefined): void {
+	if (!sessionId) return;
+}
+
+function recordWebSocketFailure(sessionId: string | undefined): void {
+	if (!sessionId) return;
+	websocketSseFallbackSessions.add(sessionId);
+}
 
 type WebSocketConstructor = new (
 	url: string,

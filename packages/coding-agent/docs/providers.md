@@ -39,6 +39,10 @@ Use `/logout` to clear credentials. Tokens are stored in `~/.pi/agent/auth.json`
 
 - Requires ChatGPT Plus or Pro subscription
 - Personal use only; for production, use the OpenAI Platform API
+- Pi keeps Codex WebSocket-capable by default to match the upstream Codex CLI transport posture.
+- Set `codexWebsocketsEnabled` to `false` in `~/.pi/agent/settings.json` when you want the Pi-side equivalent of a `supports_websockets = false` workaround without defining a custom provider.
+- After a Codex WebSocket transport failure, Pi keeps later turns in the same session on SSE through its sticky fallback state.
+- Pi still blocks silent same-turn replay after `after_message_stream_start` because Pi tool turns may already have side effects.
 
 ## API Keys
 

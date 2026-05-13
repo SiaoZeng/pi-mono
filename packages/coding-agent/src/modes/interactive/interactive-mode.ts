@@ -3697,6 +3697,7 @@ export class InteractiveMode {
 					steeringMode: this.session.steeringMode,
 					followUpMode: this.session.followUpMode,
 					transport: this.settingsManager.getTransport(),
+					codexWebsocketsEnabled: this.settingsManager.getCodexWebsocketsEnabled(),
 					thinkingLevel: this.session.thinkingLevel,
 					availableThinkingLevels: this.session.getAvailableThinkingLevels(),
 					currentTheme: this.settingsManager.getTheme() || "dark",
@@ -3752,6 +3753,10 @@ export class InteractiveMode {
 					onTransportChange: (transport) => {
 						this.settingsManager.setTransport(transport);
 						this.session.agent.transport = transport;
+					},
+					onCodexWebsocketsEnabledChange: (enabled) => {
+						this.settingsManager.setCodexWebsocketsEnabled(enabled);
+						this.session.agent.codexWebsocketsEnabled = enabled;
 					},
 					onThinkingLevelChange: (level) => {
 						this.session.setThinkingLevel(level);

@@ -74,6 +74,11 @@ export interface StreamOptions {
 	 */
 	transport?: Transport;
 	/**
+	 * Built-in Codex websocket capability override.
+	 * Providers other than `openai-codex-responses` ignore this option.
+	 */
+	codexWebsocketsEnabled?: boolean;
+	/**
 	 * Prompt cache retention preference. Providers map this to their supported values.
 	 * Default: "short".
 	 */

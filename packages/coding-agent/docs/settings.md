@@ -101,7 +101,10 @@ When a provider requests a retry delay longer than `maxDelayMs` (e.g., Google's 
 |---------|------|---------|-------------|
 | `steeringMode` | string | `"one-at-a-time"` | How steering messages are sent: `"all"` or `"one-at-a-time"` |
 | `followUpMode` | string | `"one-at-a-time"` | How follow-up messages are sent: `"all"` or `"one-at-a-time"` |
-| `transport` | string | `"sse"` | Preferred transport for providers that support multiple transports: `"sse"`, `"websocket"`, or `"auto"` |
+| `transport` | string | `"auto"` | Preferred transport for providers that support multiple transports: `"sse"`, `"websocket"`, or `"auto"` |
+| `codexWebsocketsEnabled` | boolean | `true` | Built-in websocket capability switch for `openai-codex`; set to `false` to force Codex onto SSE without a custom provider override |
+
+`codexWebsocketsEnabled` is evaluated before Pi attempts the `openai-codex` WebSocket path. When it is `false`, Codex uses SSE even if the generic `transport` setting would otherwise allow WebSockets.
 
 ### Terminal & Images
 
